@@ -55,6 +55,8 @@ async def on_message(message):
                 offers = item["offers"]
             for offer in sorted(offers, key=lambda o: o["presentation_type"])[:5]:
                 provider = providers[offer["provider_id"]]
+                if provider["short_name"] not in req["providers"]:
+                    continue
                 if offer["urls"]["standard_web"] in urls:
                     continue
                 urls.append(offer["urls"]["standard_web"])
