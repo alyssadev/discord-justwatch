@@ -46,6 +46,7 @@ async def on_message(message):
         print(req)
         resp = jw.search_for_item(**req)
         embeds = []
+        urls = []
         for item in resp["items"][:result_count]:
             embed = discord.Embed(title="{title} ({original_release_year})".format(**item), url="https://www.justwatch.com{full_path}".format(**item))
             if dontskip:
@@ -54,6 +55,9 @@ async def on_message(message):
                 offers = item["offers"]
             for offer in sorted(offers, key=lambda o: o["presentation_type"])[:5]:
                 provider = providers[offer["provider_id"]]
+                if offer["urls"]["standard_web"] in urls:
+                    continue
+                urls.append(offer["urls"]["standard_web"])
                 embed.add_field(name=provider["clear_name"], value="{presentation_type}: {urls[standard_web]}".format(**offer))
             filtered_count = len(item["offers"]) - len(offers)
             await message.channel.send(content="filtered {} results for not being free or flatrate".format(filtered_count) if filtered_count else None, embed=embed)
